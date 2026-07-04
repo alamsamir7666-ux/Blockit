@@ -27,13 +27,10 @@ jobs:
           channel: stable
 
       - name: Create google-services.json
-        env:
-          GSERV_ENC: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: |
-          echo "$GSERV_ENC" > encoded.txt
-          base64 -d encoded.txt > android/app/google-services.json
-          rm encoded.txt
-          echo "google-services.json created successfully"
+          cat > android/app/google-services.json << 'GSERVEOF'
+          ${{ secrets.GOOGLE_SERVICES_JSON }}
+          GSERVEOF
 
       - name: Get version from pubspec
         id: version
@@ -74,20 +71,19 @@ jobs:
           tag_name: v${{ steps.version.outputs.version }}
           name: Blockit v${{ steps.version.outputs.version }}
           body: |
-            ## 🚀 Blockit Release v${{ steps.version.outputs.version }}
-            
-            ### 📱 Download APKs
-            - **arm64-v8a** - Most modern Android phones
+            ## Blockit Release v${{ steps.version.outputs.version }}
+
+            ### Download APKs
+            - **arm64-v8a** - Modern phones
             - **armeabi-v7a** - Older 32-bit devices
             - **x86_64** - Emulators
-            
-            ### ✨ Features
-            - Firebase Authentication & Cloud Sync
-            - Digital wellbeing blocking system
-            - Accessibility Service + Device Admin
+
+            ### Features
+            - Firebase integrated
+            - Full blocking system
             - ProGuard/R8 optimized
-            
-            ### ⚠️ Disable Play Protect temporarily to install
+
+            ### Disable Play Protect temporarily to install
           files: |
             build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
             build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
