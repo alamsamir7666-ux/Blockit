@@ -26,10 +26,14 @@ jobs:
           flutter-version: '3.19.0'
           channel: stable
 
-      - name: Decode google-services.json
+      - name: Create google-services.json
         env:
-          GOOGLE_SERVICES_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: echo "$GOOGLE_SERVICES_BASE64" | base64 -d > android/app/google-services.json
+          GSERV_ENC: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          echo "$GSERV_ENC" > encoded.txt
+          base64 -d encoded.txt > android/app/google-services.json
+          rm encoded.txt
+          echo "google-services.json created successfully"
 
       - name: Get version from pubspec
         id: version
@@ -71,33 +75,24 @@ jobs:
           name: Blockit v${{ steps.version.outputs.version }}
           body: |
             ## 🚀 Blockit Release v${{ steps.version.outputs.version }}
-
+            
             ### 📱 Download APKs
-            Choose the APK for your device architecture:
             - **arm64-v8a** - Most modern Android phones
             - **armeabi-v7a** - Older 32-bit devices
-            - **x86_64** - Emulators and some tablets
-
-            ### ✨ What's New
-            - Complete digital wellbeing blocking system
-            - Firebase integration for authentication and cloud sync
-            - Accessibility Service for reliable app blocking
-            - Device Admin for screen lock
-            - Session timer with difficulty levels
-            - Parachute emergency escape system
-            - Stats dashboard with charts
-            - Dark theme UI
-            - ProGuard/R8 optimized (smaller APK size)
-
-            ### ⚠️ Installation Note
-            You may need to disable Play Protect temporarily to install.
-            After installing, enable all permissions in app settings.
+            - **x86_64** - Emulators
+            
+            ### ✨ Features
+            - Firebase Authentication & Cloud Sync
+            - Digital wellbeing blocking system
+            - Accessibility Service + Device Admin
+            - ProGuard/R8 optimized
+            
+            ### ⚠️ Disable Play Protect temporarily to install
           files: |
             build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
             build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
             build/app/outputs/flutter-apk/app-x86_64-release.apk
           draft: false
           prerelease: true
-          generateReleaseNotes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
