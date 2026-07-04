@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">Blockit uses Accessibility Service to help you stay focused by detecting app switches during a focus session. This is necessary to maintain the blocking screen and support your digital wellbeing goals.</string>
+</resources>
